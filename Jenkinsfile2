@@ -24,5 +24,17 @@ pipeline {
                 "http://ec2-54-226-41-49.compute-1.amazonaws.com:8081/artifactory/geoapp/"'
             }
         }
+        stage('image build'){
+            steps { 
+                sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 650948539230.dkr.ecr.us-east-1.amazonaws.com'
+                sh 'docker build -t geoapp .'
+            }
+        }
+        stage('push image'){
+            steps{
+                sh 'docker tag geoapp:latest 650948539230.dkr.ecr.us-east-1.amazonaws.com/geoapp:latest'
+                sh 'docker push 650948539230.dkr.ecr.us-east-1.amazonaws.com/geoapp:latest'
+            }
+        }
     }
 }
