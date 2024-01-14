@@ -1,13 +1,13 @@
 pipeline {
     agent {
-        docker { image 'node:20.10.0-alpine3.19' }
+        docker {image 'node:20.10.0-alpine3.19'}
     }
     stages {
         stage ('check current directory'){
             steps {
                 sh 'pwd'
                 sh 'whoami'
-                sh "mkdir \$(date '+%Y%m%d_%H%M%S')"
+                //sh "mkdir \$(date '+%Y%m%d_%H%M%S')"
                 sh 'python3 --version'
                 sh 'npm --version'
             }
