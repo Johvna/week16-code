@@ -5,6 +5,7 @@ pipeline {
     }
     stages {
         stage ('sonarqube scan'){
+
             agent {docker { image 'maven:3-amazoncorretto-17-debian'}}
             steps {
                 withSonarQubeEnv ('sonarserver'){
@@ -13,6 +14,7 @@ pipeline {
                 }
             }
         }
+
         stage ('all maven commands'){
             steps {
                 sh 'mvn clean test compile install package '
