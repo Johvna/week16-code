@@ -30,7 +30,7 @@ pipeline {
         stage('upload artifact') {
             steps {
                 // Upload artifact to Artifactory
-                sh 'curl -uadmin:APBc9hqNY7jWVLeZK6P3czW7MqA -T target/bio*.jar "http://ec2-54.157.163.151.compute-1.amazonaws.com:8081/artifactory/geoapp/"'
+                sh 'curl -uadmin:APBc9hqNY7jWVLeZK6P3czW7MqA -T target/bio*.jar "http://54.157.163.151:8081/artifactory/geoapp/"'
             }
         }
         stage('image build') {
