@@ -1,39 +1,52 @@
 pipeline {
     agent any
-    tools{
+    tools {
+        // Use the 'maven' tool with the specified environment variable
         maven 'M2_HOME'
     }
     stages {
-        stage ('sonarqube scan'){
+        stage('sonarqube scan') {
+            agent {
+                docker {
+                    image 'maven:3-amazoncorretto-17-debian'
+                    // Run the stage inside a Docker container
+                }
+            }
             steps {
-                withSonarQubeEnv ('sonarserver'){
-                sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Johvna_week16-code'
-                // sh 'mvn sonar:sonar'
+                // Use SonarQube environment variables
+                withSonarQubeEnv('sonarserver') {
+                    // Execute SonarQube analysis
+                    sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Johvna_week16-code'
+                    // sh 'mvn sonar:sonar'
                 }
             }
         }
-        stage ('all maven commands'){
+        stage('all maven commands') {
             steps {
-                sh 'mvn clean test compile install package '
+                // Execute Maven clean, test, compile, install, and package commands
+                sh 'mvn clean test compile install package'
             }
         }
-        stage ('upload artifact'){
+        stage('upload artifact') {
             steps {
-                sh 'curl -uadmin:APBc9hqNY7jWVLeZK6P3czW7MqA -T \
-                target/bio*.jar \
-                "http://ec2-54-226-41-49.compute-1.amazonaws.com:8081/artifactory/geoapp/"'
+                // Upload artifact to Artifactory
+                sh 'curl -uadmin:APBc9hqNY7jWVLeZK6P3czW7MqA -T target/bio*.jar "http://54.157.163.151:8081/artifactory/geoapp/"'
             }
         }
-        stage('image build'){
-            steps { 
+        stage('image build') {
+            steps {
+                // Authenticate with AWS ECR
                 sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 650948539230.dkr.ecr.us-east-1.amazonaws.com'
+                // Build Docker image
                 sh 'docker build -t geoapp .'
             }
         }
-        stage('push image'){
-            steps{
-                sh 'docker tag geoapp:latest 650948539230.dkr.ecr.us-east-1.amazonaws.com/geoapp:latest'
-                sh 'docker push 650948539230.dkr.ecr.us-east-1.amazonaws.com/geoapp:latest'
+        stage('push image') {
+            steps {
+                // Tag Docker image
+                sh 'docker tag geoapp:latest 650948539230.dkr.ecr.us-east-1.amazonaws.com/geoapp:${BUILD_ID}'
+                // Push Docker image to AWS ECR
+                sh 'docker push 650948539230.dkr.ecr.us-east-1.amazonaws.com/geoapp:${BUILD_ID}'
             }
         }
     }
