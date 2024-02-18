@@ -44,6 +44,7 @@ pipeline {
         stage('push image') {
             steps {
                 // Tag Docker image
+
                 sh 'docker tag geoapp:latest 650948539230.dkr.ecr.us-east-1.amazonaws.com/geoapp:${BUILD_ID}'
                 // Push Docker image to AWS ECR
                 sh 'docker push 650948539230.dkr.ecr.us-east-1.amazonaws.com/geoapp:${BUILD_ID}'
