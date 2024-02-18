@@ -41,6 +41,7 @@ pipeline {
                 sh 'docker build -t geoapp .'
             }
         }
+
         stage('push image') {
             steps {
                 // Tag Docker image
